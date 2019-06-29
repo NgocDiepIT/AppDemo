@@ -8,4 +8,8 @@ public interface OnItemStatusClickListener {
 
     void onCommentClick(Status status);
 
+    void onEditStatus(Status status);
+
+    void onDeleteStatus(Status status);
+
 }

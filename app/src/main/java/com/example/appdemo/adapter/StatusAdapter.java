@@ -110,8 +110,10 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.MyViewHold
                         public boolean onMenuItemClick(MenuItem item) {
                             switch (item.getItemId()) {
                                 case R.id.option_edit:
+                                    listener.onEditStatus(status);
                                     break;
                                 case R.id.option_delete:
+                                    listener.onDeleteStatus(status);
                                     break;
                             }
                             return false;

@@ -45,7 +45,7 @@
                         android:layout_height="50dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="@dimen/margin20"
-                        android:background="@drawable/custom_edittext_boder"
+                        android:background="@drawable/custom_edittext"
                         android:paddingStart="@dimen/margin15"
                         android:paddingTop="@dimen/margin10"
                         android:paddingEnd="@dimen/margin15"

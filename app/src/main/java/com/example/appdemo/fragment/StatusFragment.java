@@ -23,7 +23,9 @@ import com.bumptech.glide.Glide;
 import com.example.appdemo.R;
 import com.example.appdemo.activity.CommentActivity;
 import com.example.appdemo.adapter.StatusAdapter;
+import com.example.appdemo.common.EditStatusDialog;
 import com.example.appdemo.dbcontext.RealmContext;
+import com.example.appdemo.interf.OnEditDialogListener;
 import com.example.appdemo.interf.OnItemStatusClickListener;
 import com.example.appdemo.json_models.request.CreateStatusSendForm;
 import com.example.appdemo.json_models.request.LikeStatusSendForm;
@@ -41,7 +43,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class StatusFragment extends Fragment implements OnItemStatusClickListener {
+public class StatusFragment extends Fragment implements OnItemStatusClickListener, OnEditDialogListener {
     private RetrofitService retrofitService;
     ViewFlipper viewFlipper;
     RecyclerView recyclerView;
@@ -192,6 +194,18 @@ public class StatusFragment extends Fragment implements OnItemStatusClickListene
         startActivity(intent);
     }
 
+    @Override
+    public void onEditStatus(Status status) {
+        EditStatusDialog dialog = new EditStatusDialog(getContext());
+        dialog.setContent(status.getContent());
+        dialog.show();
+    }
+
+    @Override
+    public void onDeleteStatus(Status status) {
+
+    }
+
     private void likePost(Status status) {
         LikeStatusSendForm sendForm = new LikeStatusSendForm(user.getUserId(), status.getPostId());
         retrofitService.likePost(sendForm).enqueue(new Callback<Void>() {
@@ -215,5 +229,10 @@ public class StatusFragment extends Fragment implements OnItemStatusClickListene
                 Utils.showToast(getActivity(), "No Internet!");
             }
         });
+    }
+
+    @Override
+    public void onSaveClick(String content) {
+
     }
 }

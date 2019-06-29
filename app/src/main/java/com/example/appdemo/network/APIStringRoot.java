@@ -23,4 +23,8 @@ public class APIStringRoot {
     static final String DELETE_STATUS = "/api/post/{postId}";
 
     static final String GET_ALL_COMMENT = "/api/post/get-comment";
+
+    static final String GET_PROFILE = "/api/user/get-detail";
+
+    static final String CREATE_COMMENT = "/api/post/comment";
 }

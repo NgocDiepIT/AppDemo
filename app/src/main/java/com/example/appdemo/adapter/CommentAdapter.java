@@ -21,8 +21,11 @@ import java.util.ArrayList;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHolder> {
     ArrayList<Comment> commentList;
-    UserInfor user;
     Context context;
+
+    public CommentAdapter(ArrayList<Comment> commentList) {
+        this.commentList = commentList;
+    }
 
     @NonNull
     @Override

@@ -193,6 +193,9 @@ public class StatusFragment extends Fragment implements OnItemStatusClickListene
     @Override
     public void onCommentClick(Status status) {
         Intent intent = new Intent(getActivity(), CommentActivity.class);
+        Log.d("bkhub", status.getPostId());
+        intent.putExtra("GetPostId", status.getPostId());
+        intent.putExtra("GetUserId", user.getUserId());
         startActivity(intent);
     }
 

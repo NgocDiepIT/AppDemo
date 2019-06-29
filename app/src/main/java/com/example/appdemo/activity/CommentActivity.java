@@ -1,9 +1,13 @@
 package com.example.appdemo.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ViewFlipper;
@@ -11,9 +15,12 @@ import android.widget.ViewFlipper;
 import com.bumptech.glide.Glide;
 import com.example.appdemo.R;
 import com.example.appdemo.adapter.CommentAdapter;
+import com.example.appdemo.adapter.StatusAdapter;
 import com.example.appdemo.dbcontext.RealmContext;
 import com.example.appdemo.interf.OnItemStatusClickListener;
+import com.example.appdemo.json_models.request.CommentStatusSendForm;
 import com.example.appdemo.json_models.response.Comment;
+import com.example.appdemo.json_models.response.CommentCreate;
 import com.example.appdemo.json_models.response.Status;
 import com.example.appdemo.json_models.response.UserInfor;
 import com.example.appdemo.network.RetrofitService;
@@ -33,14 +40,13 @@ public class CommentActivity extends AppCompatActivity{
     private RetrofitService retrofitService;
     EditText edtComment;
     ImageView ivSend, ivAva;
-    Comment comment;
     CommentAdapter commentAdapter;
     UserInfor user;
-    Status status;
     ArrayList<Comment> commentList;
-    final int MODE_PROGRESSBAR = 0;
+    ArrayList<CommentCreate> commentCreates;
     final int MODE_NO_DATA = 1;
     final int MODE_RECYCYCLEVIEW = 2;
+    String postId, userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +57,52 @@ public class CommentActivity extends AppCompatActivity{
         init();
         if (user != null) {
             Glide.with(this).load(user.getAvatar()).into(ivAva);
-            getAllComment(status.getPostId());
+            Intent intent = getIntent();
+            postId = intent.getStringExtra("GetPostId");
+            userId = intent.getStringExtra("GetUserId");
+//            Log.d("bkhub", postId);
+            getAllComment(postId);
         }
 
+        addListener();
+    }
+
+    private void addListener() {
+        ivSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String content = edtComment.getText().toString();
+                if(!content.isEmpty()){
+                    commentStatus(content);
+                } else {
+                    Utils.showToast(CommentActivity.this, "Comment mustn't be empty!");
+                }
+            }
+        });
+
+    }
+
+    private void commentStatus(String content) {
+        CommentStatusSendForm sendForm = new CommentStatusSendForm(userId, postId, content);
+        retrofitService.commentStatus(sendForm).enqueue(new Callback<CommentCreate>() {
+            @Override
+            public void onResponse(Call<CommentCreate> call, Response<CommentCreate> response) {
+                CommentCreate res = response.body();
+                if(response.code() == 200 && res != null){
+                    commentCreates.add(commentCreates.size(), res);
+                    commentAdapter.notifyDataSetChanged();
+                    edtComment.setText("");
+                    Utils.showToast(CommentActivity.this, "Done!");
+                } else {
+                    Utils.showToast(CommentActivity.this, "Fail!");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CommentCreate> call, Throwable t) {
+                Utils.showToast(CommentActivity.this, "No Internet!");
+            }
+        });
     }
 
     private void getAllComment(String postId) {
@@ -85,5 +134,12 @@ public class CommentActivity extends AppCompatActivity{
         ivAva = findViewById(R.id.iv_ava);
         ivSend = findViewById(R.id.iv_send);
         edtComment = findViewById(R.id.edt_comment);
+
+        commentList = new ArrayList<>();
+        commentAdapter = new CommentAdapter(commentList);
+        recyclerView.setAdapter(commentAdapter);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        recyclerView.setLayoutManager(linearLayoutManager);
     }
 }

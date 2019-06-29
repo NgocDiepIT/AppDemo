@@ -25,9 +25,10 @@ import com.example.appdemo.activity.CommentActivity;
 import com.example.appdemo.adapter.StatusAdapter;
 import com.example.appdemo.common.EditStatusDialog;
 import com.example.appdemo.dbcontext.RealmContext;
-import com.example.appdemo.interf.OnEditDialogListener;
+import com.example.appdemo.interf.OnUpdateDialogListener;
 import com.example.appdemo.interf.OnItemStatusClickListener;
 import com.example.appdemo.json_models.request.CreateStatusSendForm;
+import com.example.appdemo.json_models.request.UpdateStatusSendForm;
 import com.example.appdemo.json_models.request.LikeStatusSendForm;
 import com.example.appdemo.json_models.response.Status;
 import com.example.appdemo.json_models.response.UserInfor;
@@ -43,7 +44,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class StatusFragment extends Fragment implements OnItemStatusClickListener, OnEditDialogListener {
+public class StatusFragment extends Fragment implements OnItemStatusClickListener, OnUpdateDialogListener {
     private RetrofitService retrofitService;
     ViewFlipper viewFlipper;
     RecyclerView recyclerView;
@@ -58,6 +59,7 @@ public class StatusFragment extends Fragment implements OnItemStatusClickListene
     final int MODE_PROGRESSBAR = 0;
     final int MODE_NO_DATA = 1;
     final int MODE_RECYCYCLEVIEW = 2;
+    Status currentStatus;
 
     public StatusFragment() {
     }
@@ -196,14 +198,45 @@ public class StatusFragment extends Fragment implements OnItemStatusClickListene
 
     @Override
     public void onEditStatus(Status status) {
-        EditStatusDialog dialog = new EditStatusDialog(getContext());
+        currentStatus = status;
+        EditStatusDialog dialog = new EditStatusDialog(getContext(), this);
         dialog.setContent(status.getContent());
         dialog.show();
     }
 
     @Override
     public void onDeleteStatus(Status status) {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Delete status")
+                .setMessage("Do you sure to delete this status?")
+                .setIcon(android.R.drawable.ic_dialog_dialer)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        delateStatus(user.getUserId(), status);
+                        Utils.showToast(getActivity(), "Done!");
+                    }
+                })
+                .setNegativeButton(android.R.string.no, null)
+                .show();
+    }
 
+    public void delateStatus(String userId, Status status){
+        retrofitService.deleteStatus(status.getPostId(), userId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.code() == 200){
+                    statusList.remove(status);
+                    statusAdapter.notifyDataSetChanged();
+                    Utils.showToast(getContext(), "Done!");
+                } else Utils.showToast(getContext(), "Fail!");
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Utils.showToast(getContext(), "No Internet!");
+            }
+        });
     }
 
     private void likePost(Status status) {
@@ -231,8 +264,29 @@ public class StatusFragment extends Fragment implements OnItemStatusClickListene
         });
     }
 
-    @Override
-    public void onSaveClick(String content) {
+    public void updateStatus(String userId, String newContent, String postId){
+        UpdateStatusSendForm sendForm = new UpdateStatusSendForm(userId, newContent);
 
+        retrofitService.updateStatus(postId, sendForm).enqueue(new Callback<Status>() {
+            @Override
+            public void onResponse(Call<Status> call, Response<Status> response) {
+                Status res = response.body();
+                if(response.code() == 200 && res != null){
+                    currentStatus.setContent(res.getContent());
+                    statusAdapter.notifyDataSetChanged();
+                    Utils.showToast(getActivity(), "Done!");
+                } else Utils.showToast(getActivity(), "Fail!");
+            }
+
+            @Override
+            public void onFailure(Call<Status> call, Throwable t) {
+                Utils.showToast(getActivity(), "No Internet!");
+            }
+        });
+    }
+
+    @Override
+    public void onSaveClick(String newContent) {
+        updateStatus(user.getUserId(), newContent, currentStatus.getPostId());
     }
 }

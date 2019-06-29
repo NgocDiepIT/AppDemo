@@ -11,5 +11,4 @@ public interface OnItemStatusClickListener {
     void onEditStatus(Status status);
 
     void onDeleteStatus(Status status);
-
 }

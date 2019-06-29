@@ -18,13 +18,7 @@ public class APIStringRoot {
 
     static final String GET_ALL_FRIEND = "/api/user/get-all";
 
-//    static final int CODE_OK = 200;
-//
-//    static final int MODE_PROGRESS_BAR = 0;
-//
-//    static final int MODE_NO_DATA = 1;
-//
-//    static final int MODE_NO_INTERNET = 2;
-//
-//    static final int MODE_RECYCLEVIEW = 3;
+    static final String UPDATE_STATUS = "/api/post/{postId}";
+
+    static final String DELETE_STATUS = "/api/post/{postId}";
 }

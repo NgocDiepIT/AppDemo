@@ -11,13 +11,17 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 
 import com.example.appdemo.R;
+import com.example.appdemo.interf.OnUpdateDialogListener;
+import com.example.appdemo.json_models.request.UpdateStatusSendForm;
 
 public class EditStatusDialog extends Dialog {
     EditText edtEditStatus;
     Button btnCancel, btnSave;
+    OnUpdateDialogListener listener;
 
-    public EditStatusDialog(@NonNull Context context) {
+    public EditStatusDialog(@NonNull Context context, OnUpdateDialogListener listener) {
         super(context);
+        this.listener = listener;
         init();
         addListener();
     }
@@ -33,7 +37,10 @@ public class EditStatusDialog extends Dialog {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(!edtEditStatus.getText().toString().isEmpty()){
+                    listener.onSaveClick(edtEditStatus.getText().toString());
+                    EditStatusDialog.this.dismiss();
+                }
             }
         });
     }

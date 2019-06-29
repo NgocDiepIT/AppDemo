@@ -5,6 +5,7 @@ import com.example.appdemo.json_models.request.LikeStatusSendForm;
 import com.example.appdemo.json_models.request.LoginSendForm;
 import com.example.appdemo.json_models.request.RegisterSendForm;
 import com.example.appdemo.json_models.request.UpdateStatusSendForm;
+import com.example.appdemo.json_models.response.Comment;
 import com.example.appdemo.json_models.response.Friend;
 import com.example.appdemo.json_models.response.Status;
 import com.example.appdemo.json_models.response.UserInfor;
@@ -55,4 +56,8 @@ public interface RetrofitService {
 
     @DELETE(APIStringRoot.DELETE_STATUS)
     Call<Void> deleteStatus(@Path("postId") String postId, @Header("userId") String userId);
+
+    @GET(APIStringRoot.GET_ALL_COMMENT)
+    @Headers({APIStringRoot.HEADER})
+    Call<List<Comment>> getAllComment(@Query("postId") String postId);
 }

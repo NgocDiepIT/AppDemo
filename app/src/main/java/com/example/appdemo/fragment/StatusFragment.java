@@ -213,7 +213,7 @@ public class StatusFragment extends Fragment implements OnItemStatusClickListene
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        delateStatus(user.getUserId(), status);
+                        deleteStatus(user.getUserId(), status);
                         Utils.showToast(getActivity(), "Done!");
                     }
                 })
@@ -221,7 +221,7 @@ public class StatusFragment extends Fragment implements OnItemStatusClickListene
                 .show();
     }
 
-    public void delateStatus(String userId, Status status){
+    public void deleteStatus(String userId, Status status){
         retrofitService.deleteStatus(status.getPostId(), userId).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

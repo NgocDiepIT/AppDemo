@@ -21,4 +21,6 @@ public class APIStringRoot {
     static final String UPDATE_STATUS = "/api/post/{postId}";
 
     static final String DELETE_STATUS = "/api/post/{postId}";
+
+    static final String GET_ALL_COMMENT = "/api/post/get-comment";
 }
